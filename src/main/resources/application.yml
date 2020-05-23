@@ -1,0 +1,56 @@
+server:
+  port: 9999
+
+#jdbc:
+#  diiver: com.mysql.jdbc.Driver
+#  username: root
+#  password: 1
+
+
+spring:
+  mail:
+    host: smtp.qq.com
+    port: 587
+    username: 1161107215@qq.com
+    password: sqjccedkbuvghajh
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          socketFactory:
+            class: javax.net.ssl.SSLSocketFactory
+        debug: true
+
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/diabetesselfcheckingsystem?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+      username: root
+      password: 1
+      max-active: 20
+      max-wait: 6000
+      min-idle: 1
+      test-on-borrow: true
+      test-on-return: true
+mybatis:
+  mapper-locations: classpath*:com/ysu/graduationproject/mapper/*.xml
+#  config-location: classpath:MyBatisConfig.xml
+
+# 邮件服务配置
+# SMTP 服务器地址
+#spring:
+#  mail:
+#  host:smtp.qq.com
+#  # SMTP 服务器的端口
+#  spring.mail.port=587
+#  # 邮箱用户名
+#  spring.mail.username=1161107215@qq.com
+#  # 邮箱开通 POP3/SMTP 服务时所给的授权码，换成自己申请的
+#  spring.mail.password=lzctonztwzecgecd
+#  # 默认的邮件编码
+#  spring.mail.default-encoding=UTF-8
+#  # SSL 加密工厂
+#  spring.mail.properties.mail.smtp.socketFactory.class=javax.net.ssl.SSLSocketFactory
+#  # 开启 DEBUG 模式，邮件发送过程的日志会在控制台打印出来，方便排查错误
+#  spring.mail.properties.mail.debug=true
