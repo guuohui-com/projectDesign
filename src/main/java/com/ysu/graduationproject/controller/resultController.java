@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpSession;
+
 @RestController
 @RequestMapping("result")
 public class resultController {
@@ -32,7 +34,7 @@ public class resultController {
     * 患者查看分析结果
     * */
     @PostMapping("/selectResult")
-    public ServerResponse selectResult(){
-        return iresultService.selectResult();
+    public ServerResponse selectResult(HttpSession session){
+        return iresultService.selectResult(session);
     }
 }

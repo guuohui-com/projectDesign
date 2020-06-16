@@ -138,7 +138,7 @@
         doctorId = #{doctorid,jdbcType=VARCHAR},
       </if>
       <if test="patientType != null">
-        caseId = #{patientType,jdbcType=VARCHAR},
+        patientType = #{patientType,jdbcType=VARCHAR},
       </if>
       <if test="name != null">
         name = #{name,jdbcType=VARCHAR},

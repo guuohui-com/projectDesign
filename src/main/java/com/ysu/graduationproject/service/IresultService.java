@@ -6,9 +6,11 @@ import com.ysu.graduationproject.po.Result;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import javax.servlet.http.HttpSession;
+
 @Service
 public interface IresultService {
     ServerResponse createResult(Result result);
 
-    ServerResponse selectResult();
+    ServerResponse selectResult(HttpSession session);
 }

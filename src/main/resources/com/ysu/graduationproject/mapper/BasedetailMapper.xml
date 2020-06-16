@@ -57,7 +57,7 @@
     detailsId
     from basedetail
     where detailsId = #{detailsId,jdbcType=VARCHAR}
-    order by createTime asc
+    order by createTime desc
   </select>
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
@@ -270,23 +270,29 @@
 		where p.tableId = #{patientId}
   </select>
 
-  <select id="patientSearchTodayResult" resultMap="BaseResultMap">
-    SELECT <include refid="Base_Column_List" />
-    FROM basedetail
-    WHERE DAY(createTime) = DAY(now());
+  <select id="patientSearchTodayResult" parameterType="java.lang.String" resultMap="BaseResultMap">
+   select b.*
+    from patient p join patientcase c
+    on p.tableId = c.patientId
+		JOIN details d
+		on c.tableId = d.caseId
+		JOIN basedetail b
+		on b.detailsId = d.tableId
+		where DAY(b.createTime) = DAY(now()) and p.tableId = #{patientId}
   </select>
 
   <select id="selectRecentData" resultMap="BaseResultMap">
-   SELECT b.tableId, b.bloodSuger, b.bloodSugerType, b.bloodPressureHeigh, b.bloodPressureLow,b.weight,b.bloodPressLevel,b.bloodSugerLevel,b.weightLevel,b.delFlag,
-    b.detailsId,b.createTime,max(b.createTime)
-    FROM basedetail b
-    join details d
+    select b.*
+	FROM basedetail b
+	join details d
     on b.detailsId = d.tableId
     join patientcase pc
     on d.caseId = pc.tableId
     join patient p
     on p.tableId = pc.patientId
-    where p.tableId = #{patientId}
+	where p.tableId = #{tableid}
+	ORDER BY createTime desc
+	LIMIT 0,1
   </select>
 
 </mapper>

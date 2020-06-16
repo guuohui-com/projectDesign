@@ -7,11 +7,13 @@ import com.ysu.graduationproject.common.ServerResponse;
 import com.ysu.graduationproject.dao.*;
 import com.ysu.graduationproject.po.*;
 import com.ysu.graduationproject.service.IdoctorService;
+import com.ysu.graduationproject.utils.GDSessionUtils;
 import com.ysu.graduationproject.utils.GDUtils;
 import com.ysu.graduationproject.utils.S_SmsDemo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpSession;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -49,6 +51,10 @@ public class doctorServiceImpl implements IdoctorService {
         return true;
     }
 
+    //通过patientId找到detailsId
+    public String findDetailsId(String patientId){
+        return basedetailMapper.findDetailsId(patientId);
+    }
 
     @Override
     public ServerResponse doctorRegister(Doctor doctor) {
@@ -93,8 +99,8 @@ public class doctorServiceImpl implements IdoctorService {
     }
 
     @Override
-    public ServerResponse updateNumb(Doctor doctor) {
-        doctor.setTableid(this.doctorId);
+    public ServerResponse updateNumb(Doctor doctor, HttpSession session) {
+        doctor.setTableid(GDSessionUtils.getDoctorSession(session).getTableid());
         int row = doctorMapper.updateByPrimaryKeySelective(doctor);
         if(row<1){
             return ServerResponse.createServerResponseByFail("更新失败");
@@ -103,8 +109,8 @@ public class doctorServiceImpl implements IdoctorService {
     }
 
     @Override
-    public ServerResponse selectPatient() {
-        String doctorId = this.doctorId;
+    public ServerResponse selectPatient(HttpSession session) {
+        String doctorId = GDSessionUtils.getDoctorSession(session).getTableid();
         List<Patient> patientList = patientMapper.selectPatientByDoctorId(doctorId);
         SimpleDateFormat df = new SimpleDateFormat("yyyy-mm-dd");
         for (Patient p:patientList) {
@@ -120,23 +126,30 @@ public class doctorServiceImpl implements IdoctorService {
     //医生查看单个病人的病例
     @Override
     public ServerResponse selectPatientCase(Patient patient) {
+        System.out.println("======================="+patient.getTableid());
         if(GDUtils.isNull(patient)){
             return ServerResponse.createServerResponseByFail("请填写信息");
         }
         if(GDUtils.isNull(patient.getTableid())){
             return ServerResponse.createServerResponseByFail("请选择患者");
         }
+        //病例编号信息
         Patientcase patientcase = patientcaseMapper.selectByPatientId(patient.getTableid());
+        System.out.println("===========patientcase==============="+patientcase.getTableid());
         if(GDUtils.isNull(patientcase)){
             return ServerResponse.createServerResponseByFail("您还没有病例");
         }
+        Details details = detailsMapper.selectByPrimaryKey(patientcase.getDetailsid());
+        patientcase.setDetails(details);
+        //个人信息
         Patient patientTest = patientMapper.selectByPrimaryKey(patient.getTableid());
+        //日常数据信息
         List<Basedetail> basedetailList = basedetailMapper.selectByDetailsId(patientcase.getDetailsid());
         SimpleDateFormat df = new SimpleDateFormat("MM/dd");
-
         for (Basedetail b :basedetailList) {
            b.setCreatetimeS(df.format(b.getCreatetime()).toString().trim());
         }
+        //高级数据信息
         List<Moredetails> moredetailsList = moredetailsMapper.selectByDetailsId(patientcase.getDetailsid());
         patientcase.setPatient(patientTest);
         patientcase.setBasedetailList(basedetailList);
@@ -145,15 +158,15 @@ public class doctorServiceImpl implements IdoctorService {
     }
 
     @Override
-    public ServerResponse updatePatientType(Patientcase patientcase) {
-        if(GDUtils.isNull(patientcase)){
+    public ServerResponse updatePatientType(Patient patient) {
+        if(GDUtils.isNull(patient)){
             return ServerResponse.createServerResponseByFail("请填写糖尿病类型信息");
         }
-        int row = patientcaseMapper.updateByPrimaryKeySelective(patientcase);
+        int row = patientMapper.updateByPrimaryKeySelective(patient);
         if(row<1){
             return ServerResponse.createServerResponseByFail("更新失败");
         }
-        return ServerResponse.createServerResponseBySucces("更新成功",patientcase);
+        return ServerResponse.createServerResponseBySucces("更新成功",patient);
     }
 
     @Override
@@ -209,9 +222,23 @@ public class doctorServiceImpl implements IdoctorService {
     }
 
     @Override
-    public ServerResponse inputMoreDetail(Moredetails moredetails) {
-
-        return null;
+    public ServerResponse inputMoreDetail(MoreDetailsVO moreDetailsVO) {
+        if(GDUtils.isNull(moreDetailsVO)){
+            return ServerResponse.createServerResponseByFail("请填数据");
+        }
+        Moredetails moredetails = new Moredetails();
+        moredetails = moreDetailsVO.getMoredetails();
+        //找到DetailId
+        System.out.println("==============findDetailsId(patientId)============="+moreDetailsVO);
+        System.out.println("==============findDetailsId(patientId)============="+moreDetailsVO.getTableId());
+        System.out.println("==============findDetailsId(patientId)============="+moreDetailsVO.getMoredetails());
+        moredetails.setDetailsid(findDetailsId(moreDetailsVO.getTableId()));
+        moredetails.setTableid(UUID.randomUUID().toString());
+        int row = moredetailsMapper.insertSelective(moredetails);
+        if(row<1){
+            return ServerResponse.createServerResponseByFail("更新失败");
+        }
+        return  ServerResponse.createServerResponseBySucces("更新成功",moredetails);
     }
 
     @Override

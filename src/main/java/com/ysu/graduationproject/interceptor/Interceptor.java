@@ -16,7 +16,7 @@ import java.io.PrintWriter;
 public class Interceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        System.out.println("===========preHandle=============");
+
 //        if (request.getSession().getAttribute("patient")==null){
 //            response.reset();
 //            try {
@@ -39,12 +39,12 @@ public class Interceptor implements HandlerInterceptor {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
         //controller给diaspatcherServlet响应时调用
-        System.out.println("=========postHandler==========");
+
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
         //给客户端响应之后
-        System.out.println("=======afterCompletion========");
+
     }
 }

@@ -6,11 +6,13 @@ import com.ysu.graduationproject.po.Patient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import javax.servlet.http.HttpSession;
+
 @Service
 public interface Ibasedetails {
-    ServerResponse patientBaseRecord(Basedetail basedetail);
+    ServerResponse patientBaseRecord(Basedetail basedetail,HttpSession session);
 
-    ServerResponse patientDataAnalysis(Basedetail basedetail);
+    ServerResponse patientDataAnalysis(Basedetail basedetail, HttpSession session);
 
-    ServerResponse patientSearchTodayResult();
+    ServerResponse patientSearchTodayResult(HttpSession session);
 }

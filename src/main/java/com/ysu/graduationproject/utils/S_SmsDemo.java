@@ -60,8 +60,7 @@ public class S_SmsDemo {
         //request.setTemplateCode("SMS_174585446");
         //可选:模板中的变量替换JSON串,如模板内容为"亲爱的${name},您的验证码为${code}"时,此处的值为
 
-        request.setTemplateParam("{\"code\":\""+user+"\"}");
-        //request.setTemplateParam("{\"code\":\""+user+"\"}");
+        request.setTemplateParam("{\"code\":\""+phone+"\"}");
         //request.setTemplateParam("{\"user\":\""+user+"\", \"money\":\""+money+"\"}");
         //选填-上行短信扩展码(无特殊需求用户请忽略此字段)
         //request.setSmsUpExtendCode("90997");

@@ -73,9 +73,9 @@ public class patientController {
     * */
     @RequestMapping("/patientChooseDoctor")
     @ResponseBody
-    public ServerResponse patientChooseDoctor(@RequestBody Doctor doctor){
+    public ServerResponse patientChooseDoctor(@RequestBody Doctor doctor,HttpSession session){
         try {
-            return ipatientService.patientChooseDoctor(doctor);
+            return ipatientService.patientChooseDoctor(doctor,session);
         } catch (Exception e) {
             e.printStackTrace();
         }

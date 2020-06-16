@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Service
@@ -35,10 +36,10 @@ public class resultServiceImpl implements IresultService {
     }
 
     @Override
-    public ServerResponse selectResult() {
+    public ServerResponse selectResult(HttpSession session) {
         List<Result> resultList = null;
         try {
-            resultList = resultMapper.selectResultAll(this.patientId);
+            resultList = resultMapper.selectResultAll(GDSessionUtils.getPatientSession(session).getTableid());
         } catch (Exception e) {
             e.printStackTrace();
         }

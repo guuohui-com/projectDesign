@@ -156,7 +156,7 @@ public class PatientServiceImpl implements IpatientService {
 
     @Transactional(rollbackFor=Exception.class)
     @Override
-    public ServerResponse patientChooseDoctor(Doctor doctor ) throws Exception {
+    public ServerResponse patientChooseDoctor(Doctor doctor,HttpSession session) throws Exception {
         if(GDUtils.isNull(doctor)){
             return ServerResponse.createServerResponseByFail("请选择患者");
         }
@@ -168,10 +168,10 @@ public class PatientServiceImpl implements IpatientService {
 //        if(!doctorService.isDoctorAlive(doctor.getTableid())){
 //            return ServerResponse.createServerResponseByFail("这个医生不存在");
 //        }
-        Patientcase patientcase = patientcaseMapper.selectByPatientId(this.patientId);
+        Patientcase patientcase = patientcaseMapper.selectByPatientId(GDSessionUtils.getPatientSession(session).getTableid());
         patientcase.setDoctorid(doctor.getTableid());
         int row = patientcaseMapper.updateByPrimaryKeySelective(patientcase);
-        Patient patient = patientMapper.selectByPrimaryKey(this.patientId);
+        Patient patient = patientMapper.selectByPrimaryKey(GDSessionUtils.getPatientSession(session).getTableid());
         patient.setDoctorid(doctor.getTableid());
         int rowPatient = patientMapper.updateByPrimaryKeySelective(patient);
         if(row<1){
@@ -188,12 +188,14 @@ public class PatientServiceImpl implements IpatientService {
     public ServerResponse sendDateSorce(Patient patient) {
         boolean flag = false;
         SimpleMailMessage msg = new SimpleMailMessage();
+        StringBuilder stringBuilder = new StringBuilder(patient.getName());
+        stringBuilder.append("日常数据项超标，请您注意查看");
         try{
             msg.setSubject("数据异常通知"); // 邮件主题
             msg.setFrom(mailProperties.getUsername()); // 邮件发送者
             msg.setTo("1161107215@qq.com"); // 邮件接收者，可以有多个
             msg.setSentDate(new Date()); // 邮件发送日期
-            msg.setText("这是测试邮件内容"); // 邮件正文
+            msg.setText(stringBuilder.toString()); // 邮件正文
             javaMailSender.send(msg);
             flag = true;
             patient.setUpset("1");

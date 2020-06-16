@@ -15,6 +15,7 @@
     <result column="urineProtein" jdbcType="VARCHAR" property="urineprotein" />
     <result column="delFlag" jdbcType="VARCHAR" property="delflag" />
     <result column="detailsId" jdbcType="VARCHAR" property="detailsid" />
+    <result column="createTime" jdbcType="DATE" property="createTime" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--
@@ -23,7 +24,7 @@
       This element was generated on Tue Apr 07 13:18:01 CST 2020.
     -->
     tableId, glycosylatedRedProtein, heart, footBottom, eyes, urineProtein, delFlag, 
-    detailsId
+    detailsId,createTime
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     <!--
@@ -47,6 +48,7 @@
     <include refid="Base_Column_List" />
     from moredetails
     where detailsId = #{detailsId,jdbcType=VARCHAR}
+    order by createTime desc
   </select>
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
@@ -66,11 +68,12 @@
     -->
     insert into moredetails (tableId, glycosylatedRedProtein, 
       heart, footBottom, eyes, 
-      urineProtein, delFlag, detailsId
+      urineProtein, delFlag, detailsId,createTime
       )
     values (#{tableid,jdbcType=VARCHAR}, #{glycosylatedredprotein,jdbcType=VARCHAR}, 
       #{heart,jdbcType=VARCHAR}, #{footbottom,jdbcType=VARCHAR}, #{eyes,jdbcType=VARCHAR}, 
-      #{urineprotein,jdbcType=VARCHAR}, #{delflag,jdbcType=VARCHAR}, #{detailsid,jdbcType=VARCHAR}
+      #{urineprotein,jdbcType=VARCHAR}, #{delflag,jdbcType=VARCHAR}, #{detailsid,jdbcType=VARCHAR},
+      now()
       )
   </insert>
   <insert id="insertSelective" parameterType="com.ysu.graduationproject.po.Moredetails">
@@ -105,6 +108,7 @@
       <if test="detailsid != null">
         detailsId,
       </if>
+        createTime,
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="tableid != null">
@@ -131,6 +135,7 @@
       <if test="detailsid != null">
         #{detailsid,jdbcType=VARCHAR},
       </if>
+      now()
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.ysu.graduationproject.po.Moredetails">
@@ -162,6 +167,7 @@
       <if test="detailsid != null">
         detailsId = #{detailsid,jdbcType=VARCHAR},
       </if>
+        createTime = now(),
     </set>
     where tableId = #{tableid,jdbcType=VARCHAR}
   </update>
@@ -179,6 +185,7 @@
       urineProtein = #{urineprotein,jdbcType=VARCHAR},
       delFlag = #{delflag,jdbcType=VARCHAR},
       detailsId = #{detailsid,jdbcType=VARCHAR}
+      createTime= #{createTime,jdbcType=VARCHAR}
     where tableId = #{tableid,jdbcType=VARCHAR}
   </update>
 </mapper>

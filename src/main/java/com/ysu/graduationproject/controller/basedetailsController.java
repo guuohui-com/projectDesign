@@ -8,6 +8,8 @@ import com.ysu.graduationproject.service.Ibasedetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
+
 @RestController
 @RequestMapping("patient")
 public class basedetailsController {
@@ -17,19 +19,19 @@ public class basedetailsController {
 
     //患者记录日常数据
     @PostMapping("/patientBaseRecord")
-    public ServerResponse patientBaseRecord(@RequestBody Basedetail basedetail){
-        return ibasedetails.patientBaseRecord(basedetail);
+    public ServerResponse patientBaseRecord(@RequestBody Basedetail basedetail, HttpSession session){
+        return ibasedetails.patientBaseRecord(basedetail,session);
     }
 
     //患者查看今日结果
     @PostMapping("/patientSearchTodayResult")
-    public ServerResponse patientSearchTodayResult(){
-        return ibasedetails.patientSearchTodayResult();
+    public ServerResponse patientSearchTodayResult(HttpSession session){
+        return ibasedetails.patientSearchTodayResult(session);
     }
 
     //系统分析日常数据
     @PostMapping("/patientDataAnalysis")
-    public ServerResponse patientDataAnalysis(@RequestBody Basedetail basedetail){
-        return ibasedetails.patientDataAnalysis(basedetail);
+    public ServerResponse patientDataAnalysis(@RequestBody Basedetail basedetail,HttpSession session){
+        return ibasedetails.patientDataAnalysis(basedetail,session);
     }
 }

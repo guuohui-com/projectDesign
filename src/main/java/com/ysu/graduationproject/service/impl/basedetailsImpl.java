@@ -15,6 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
+import javax.security.auth.message.config.ServerAuthContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.UUID;
 
 @Service
@@ -34,7 +37,6 @@ public class basedetailsImpl implements Ibasedetails {
 
     private String patientId = "05ffb4a1-0469-4b19-bf5b-ef3fd2c7cd60";
 
-
     //通过detailsId找到patientId
     public Patient findPatient(String detailsId){
         return patientMapper.findPatientId(detailsId);
@@ -42,32 +44,34 @@ public class basedetailsImpl implements Ibasedetails {
 
     //通过patientId找到detailsId
     public String findDetailsId(String patientId){
+        System.out.println("============findDetailsId============="+patientId);
+        System.out.println("=============findDetailsId=============="+basedetailMapper.findDetailsId(patientId));
         return basedetailMapper.findDetailsId(patientId);
     }
     @Override
-    public ServerResponse patientBaseRecord(Basedetail basedetail) {
+    public ServerResponse patientBaseRecord(Basedetail basedetail,HttpSession session) {
 
             if ((!(GDUtils.isNull(basedetail.getBloodsuger()))) && GDUtils.isNull(basedetail.getBloodsugertype())){
                 return ServerResponse.createServerResponseByFail("请选择血糖测量时间");
             }
-            return  patientDataAnalysis(basedetail);
+            return  patientDataAnalysis(basedetail,session);
     }
 
     @Override
-    public ServerResponse patientDataAnalysis(Basedetail basedetail ) {
+    public ServerResponse patientDataAnalysis(Basedetail basedetail,HttpSession session) {
         boolean flag = false;
         ServerResponse serverResponse = new ServerResponse();
         //通过patientId找到details和临界值
-       ;
+
         Details details = null;
         try {
-            details = detailsMapper.selectByPrimaryKey(findDetailsId(this.patientId));
+            details = detailsMapper.selectByPrimaryKey(findDetailsId(GDSessionUtils.getPatientSession(session).getTableid()));
+            System.out.println("==details+=="+findDetailsId(GDSessionUtils.getPatientSession(session).getTableid()));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-//        System.out.println("details"+"=================="+details);
-//        System.out.println("basedetail"+"=================="+basedetail);
+        System.out.println("details"+"=================="+details.getTableid());
         //比较并且将血压，血糖，体重层次插入
         if(!GDUtils.isNull(basedetail.getBloodpressureHeigh())) {//分析血压
             switch (BloodPressSort(basedetail.getBloodpressureHeigh(), basedetail.getBloodpressureLow())) {
@@ -88,8 +92,6 @@ public class basedetailsImpl implements Ibasedetails {
                     break;
                 }
             }
-            System.out.println("details"+"=================="+details);
-            System.out.println("basedetail"+"=================="+basedetail);
             if (basedetail.getBloodpressureHeigh() > details.getCriticalBloodPressureHeigh() ||
                     basedetail.getBloodpressureLow() > details.getCriticalBloodPressureLow()) {
                 flag = true;
@@ -144,7 +146,7 @@ public class basedetailsImpl implements Ibasedetails {
             patientService.sendDateSorce(findPatient(details.getTableid()));
         }
 
-        if(patientSearchTodayResult().getMsg()=="查询成功"){
+        if(patientSearchTodayResult(session).getMsg()=="查询成功"){
             int row = basedetailMapper.updateByCreateTime(basedetail);
             if(row<1){
                 return ServerResponse.createServerResponseByFail("日常数据更新失败");
@@ -152,10 +154,10 @@ public class basedetailsImpl implements Ibasedetails {
             return ServerResponse.createServerResponseBySucces("日常数据更新成功",basedetail);
         }
 
-        if(patientSearchTodayResult().getMsg()=="今日未录入数据"){
+        if(patientSearchTodayResult(session).getMsg()=="今日未录入数据"){
             basedetail.setTableid(UUID.randomUUID().toString());
             try {
-                basedetail.setDetailsid(findDetailsId(this.patientId));
+                basedetail.setDetailsid(findDetailsId(GDSessionUtils.getPatientSession(session).getTableid()));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -169,8 +171,8 @@ public class basedetailsImpl implements Ibasedetails {
     }
 
     @Override
-    public ServerResponse patientSearchTodayResult() {
-        Basedetail basedetail = basedetailMapper.patientSearchTodayResult();
+    public ServerResponse patientSearchTodayResult(HttpSession session) {
+        Basedetail basedetail = basedetailMapper.patientSearchTodayResult(GDSessionUtils.getPatientSession(session).getTableid());
         if (GDUtils.isNull(basedetail)){
             return ServerResponse.createServerResponseByFail("今日未录入数据");
         }

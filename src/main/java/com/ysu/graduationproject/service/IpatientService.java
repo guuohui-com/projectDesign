@@ -7,6 +7,7 @@ import com.ysu.graduationproject.po.Patient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Service
@@ -17,7 +18,7 @@ public interface IpatientService {
 
     ServerResponse patientSelectDoctor();
 
-    ServerResponse patientChooseDoctor(Doctor doctor) throws Exception;
+    ServerResponse patientChooseDoctor(Doctor doctor, HttpSession session) throws Exception;
 
     ServerResponse sendDateSorce(Patient patient);
 

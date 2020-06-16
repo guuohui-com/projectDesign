@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpSession;
+
 @RestController
 @RequestMapping("doctor")
 public class doctorController {
@@ -25,20 +27,22 @@ public class doctorController {
 
     //医生的登录
     @PostMapping("/doctorLogin")
-    public ServerResponse doctorLogin(@RequestBody Doctor doctor){
-        return idoctorService.doctorLogin(doctor);
+    public ServerResponse doctorLogin(@RequestBody Doctor doctor,HttpSession session){
+        ServerResponse serverResponse = idoctorService.doctorLogin(doctor);
+        session.setAttribute("doctor",serverResponse.getData());
+        return serverResponse;
     }
 
     //医生修改管理病人数
     @PostMapping("/updateNumb")
-    public ServerResponse updateNumb(@RequestBody Doctor doctor){
-        return idoctorService.updateNumb(doctor);
+    public ServerResponse updateNumb(@RequestBody Doctor doctor, HttpSession session){
+        return idoctorService.updateNumb(doctor,session);
     }
 
     //医生查看管理的患者信息
     @PostMapping("/selectPatient")
-    public ServerResponse selectPatient(){
-        return idoctorService.selectPatient();
+    public ServerResponse selectPatient(HttpSession session){
+        return idoctorService.selectPatient(session);
     }
 
     //查看单个患者的病例
@@ -49,8 +53,8 @@ public class doctorController {
 
     //填写单个人的糖尿病类型
     @PostMapping("/updatePatientType")
-    public ServerResponse updatePatientType(@RequestBody Patientcase patientcase){
-        return idoctorService.updatePatientType(patientcase);
+    public ServerResponse updatePatientType(@RequestBody Patient patient){
+        return idoctorService.updatePatientType(patient);
     }
 
     //医生传唤患者
@@ -61,8 +65,9 @@ public class doctorController {
 
     //医生给患者插入MoreDetail
     @PostMapping("/inputMoreDetail")
-    public ServerResponse inputMoreDetail(@RequestBody Moredetails moredetails){
-        return idoctorService.inputMoreDetail(moredetails);
+    public ServerResponse inputMoreDetail(@RequestBody MoreDetailsVO moreDetailsVO){
+        System.out.println("==========inputMoreDetail=============");
+        return idoctorService.inputMoreDetail(moreDetailsVO);
     }
 
     //医生修改Details中的临界值

@@ -58,7 +58,7 @@ public interface BasedetailMapper {
 
     List<Basedetail> selectByDetailsId(String detailsid);
 
-    Basedetail patientSearchTodayResult();
+    Basedetail patientSearchTodayResult(String patientId);
 
     int updateByCreateTime(Basedetail basedetail);
 
